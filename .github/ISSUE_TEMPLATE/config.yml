@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability report
+    url: https://github.com/qonhq/qon/security/advisories/new
+    about: Please report security vulnerabilities privately.
+  - name: Community support
+    url: https://github.com/qonhq/qon/discussions
+    about: Ask questions and discuss ideas with the community.

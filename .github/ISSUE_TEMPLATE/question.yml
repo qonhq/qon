@@ -1,0 +1,17 @@
+name: Question
+description: Ask a usage or design question
+labels: ["question"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What do you want to know?
+      placeholder: Ask your question clearly.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Share code snippets, configs, or constraints.
