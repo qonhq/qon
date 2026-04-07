@@ -1,0 +1,44 @@
+name: Trigger qon-build Release
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch-build-release:
+    runs-on: ubuntu-latest
+    environment: qon-build
+    steps:
+      - name: Dispatch release metadata to qon-build
+        env:
+          GH_TOKEN: ${{ secrets.QON_BUILD_REPO_DISPATCH_TOKEN }}
+          CORE_REPO: ${{ github.repository }}
+          CORE_TAG: ${{ github.event.release.tag_name }}
+          CORE_NAME: ${{ github.event.release.name }}
+          CORE_PRERELEASE: ${{ github.event.release.prerelease }}
+          CORE_HTML_URL: ${{ github.event.release.html_url }}
+          CORE_TARGET: ${{ github.event.release.target_commitish }}
+        shell: bash
+        run: |
+          if [[ -z "${GH_TOKEN}" ]]; then
+            echo "Missing secret QON_BUILD_REPO_DISPATCH_TOKEN" >&2
+            exit 1
+          fi
+
+          VERSION="${CORE_TAG#v}"
+
+          payload="{\"event_type\":\"core_release_published\",\"client_payload\":{\"source_repo\":\"${CORE_REPO}\",\"source_release_url\":\"${CORE_HTML_URL}\",\"source_target_commitish\":\"${CORE_TARGET}\",\"tag_name\":\"${CORE_TAG}\",\"version\":\"${VERSION}\",\"name\":\"${CORE_NAME}\",\"prerelease\":${CORE_PRERELEASE}}}"
+
+          curl --fail --show-error --silent \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/qonhq/qon-build/dispatches \
+            -d "${payload}"
+
+          echo "Dispatched core release ${CORE_TAG} to qonhq/qon-build"
