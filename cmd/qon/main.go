@@ -16,7 +16,7 @@ func main() {
 	var mode string
 	var addr string
 	var accessKey string
-	flag.StringVar(&mode, "mode", "bridge", "execution mode: bridge or server")
+	flag.StringVar(&mode, "mode", "bridge", "execution mode: bridge, bridge-json, or server")
 	flag.StringVar(&addr, "addr", ":8080", "server mode listen address")
 	flag.StringVar(&accessKey, "access-key", "", "optional access key for request authorization")
 	flag.Parse()
@@ -28,6 +28,10 @@ func main() {
 
 	switch mode {
 	case "bridge":
+		if err := bridge.RunBinaryStdio(client, os.Stdin, os.Stdout); err != nil {
+			log.Fatalf("bridge failed: %v", err)
+		}
+	case "bridge-json":
 		if err := bridge.RunJSONStdio(client, os.Stdin, os.Stdout); err != nil {
 			log.Fatalf("bridge failed: %v", err)
 		}

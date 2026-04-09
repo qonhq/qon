@@ -19,8 +19,8 @@ High-performance HTTP/HTTPS networking engine written in Go, designed as the cor
 - Request tracing via trace IDs and propagated header
 - Access-key gate for server mode integrations
 - Plugin hooks for request lifecycle extensibility
-- Bridge mode via JSON over stdin/stdout
-- Future bridge framing codec for binary protocol migration
+- Binary framed bridge mode over stdin/stdout (default)
+- Legacy JSON bridge mode for compatibility
 - Optional server mode exposing /request, /metrics, /health
 
 ## Project Structure
@@ -40,10 +40,16 @@ Build:
 go build ./...
 ```
 
-Bridge mode (stdin/stdout JSON lines):
+Bridge mode (binary framed protocol, default):
 
 ```bash
 go run ./cmd/qon -mode bridge
+```
+
+Legacy JSON bridge mode:
+
+```bash
+go run ./cmd/qon -mode bridge-json
 ```
 
 Server mode:
@@ -52,9 +58,9 @@ Server mode:
 go run ./cmd/qon -mode server -addr :8080
 ```
 
-## Bridge Request Example
+## Legacy JSON Bridge Example
 
-Input line:
+Input line (only when using `-mode bridge-json`):
 
 ```json
 {"method":"GET","url":"https://httpbin.org/get","timeout_ms":5000,"priority":1}
@@ -76,7 +82,6 @@ go test ./...
 
 Qon already includes forward-compatible foundations for upcoming capabilities:
 
-- Binary bridge framing codec for persistent multiplexed transports
 - Priority scheduler that can be upgraded to weighted queues
 - Plugin lifecycle hooks for middleware-style extensions
 - Access-key and rate-limiting primitives for service mode hardening
